@@ -1,0 +1,50 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.+'
+    }
+}
+
+group 'com.github.irvifa'
+version getGitTag()
+
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'checkstyle'
+apply plugin: 'com.jfrog.bintray'
+apply from: './gradle/publish.gradle'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation "io.dropwizard:dropwizard-json-logging:$dropwizardVersion"
+    testImplementation group: 'junit', name: 'junit', version: '4.12'
+}
+
+checkstyle {
+    toolVersion = '8.8'
+    configFile = rootProject.file('config/checkstyle/checkstyle.xml')
+    ignoreFailures = false
+    showViolations = true
+
+    checkstyleMain.source = 'src/main/java'
+}
+
+def getGitTag() {
+    if (project.hasProperty("releaseTag")) {
+        // Get from -PreleaseTag=X when running this task
+        return releaseTag
+    }
+    def stdout = new ByteArrayOutputStream()
+    exec {
+        commandLine 'git', 'describe', '--tags'
+        standardOutput = stdout
+    }
+    return stdout.toString().trim()
+}
