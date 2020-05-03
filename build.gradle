@@ -49,3 +49,10 @@ def getGitTag() {
     }
     return stdout.toString().trim()
 }
+
+checkstyle {
+    toolVersion = '8.8'
+    configFile = rootProject.file('config/checkstyle/checkstyle.xml')
+    ignoreFailures = false
+    showViolations = true
+}
